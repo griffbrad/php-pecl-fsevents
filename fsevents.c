@@ -2,6 +2,7 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/ioctl.h>
@@ -102,6 +103,13 @@ void call_user_watch_callback(int watch_index)
     zend_call_function(&watch_ret->fci, NULL TSRMLS_CC);
 }
 
+bool starts_with(const char *str, const char *pre)
+{
+    size_t lenpre = strlen(pre),
+           lenstr = strlen(str);
+    return lenstr < lenpre ? false : strncmp(pre, str, lenpre) == 0;
+}
+
 void handle_events(
     ConstFSEventStreamRef         stream_ref,
     void                          *client_callback_info,
@@ -123,7 +131,7 @@ void handle_events(
         for (n = 0; n < 100; n += 1) {
             watch = FSEVENTS_GLOBAL(watches)[n];
 
-            if (NULL != watch.path && 0 == strcmp(path, watch.path)) {
+            if (NULL != watch.path && starts_with(path, watch.path)) {
                 call_user_watch_callback(n);
             }
         }
