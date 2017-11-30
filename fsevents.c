@@ -86,14 +86,14 @@ void call_user_watch_callback(int watch_index)
     watch_ret = &FSEVENTS_GLOBAL(watches)[watch_index];
 
     zval *retval = NULL;
-    zval **params[1];
+    zval params[1];
     zval *event_array;
 
     ZVAL_NEW_ARR(retval);
     ZVAL_NEW_ARR(event_array);
     array_init(event_array);
 
-    params[0] = &event_array;
+    params[0] = *event_array;
 
     watch_ret->fci.params         = params;
     watch_ret->fci.param_count    = 1;
