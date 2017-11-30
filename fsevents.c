@@ -89,15 +89,15 @@ void call_user_watch_callback(int watch_index)
     zval **params[1];
     zval *event_array;
 
-    MAKE_STD_ZVAL(retval);
-    MAKE_STD_ZVAL(event_array);
+    ZVAL_NEW_ARR(retval);
+    ZVAL_NEW_ARR(event_array);
     array_init(event_array);
 
     params[0] = &event_array;
 
     watch_ret->fci.params         = params;
     watch_ret->fci.param_count    = 1;
-    watch_ret->fci.retval_ptr_ptr = &retval;
+    watch_ret->fci.retval         = retval;
     watch_ret->fci.no_separation  = 0;
 
     zend_call_function(&watch_ret->fci, NULL TSRMLS_CC);
@@ -189,7 +189,7 @@ void store_watch(char *realpath, zend_fcall_info fci, zend_fcall_info_cache fci_
     watch.fcc  = fci_cache;
     watch.path = realpath;
 
-    Z_ADDREF_P(watch.fci.function_name);
+    Z_ADDREF_P(&watch.fci.function_name);
 
     FSEVENTS_GLOBAL(watches)[FSEVENTS_GLOBAL(counter)] = watch;
     FSEVENTS_GLOBAL(counter)++;
